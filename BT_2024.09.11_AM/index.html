@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="root"></div>
+    <script>
+        const h1 = document.createElement('h1');
+        h1.innerHTML = 'Hello World';
+        h1.id = '001'
+        h1.className = 'test'
+        h1.style = 'color: red;font-size: 20px;background-color: yellow'
+        const root = document.getElementById('root');
+        root.appendChild(h1);
+    </script>
+</body>
+</html>
