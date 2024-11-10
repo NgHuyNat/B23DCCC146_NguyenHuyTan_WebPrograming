@@ -19,6 +19,11 @@ export const updateTodo = async (todo) => {
     return response.data;
     }
 
+export const updateCheckbox = async (todo) => {
+    const response = await instance.put(`/todo/${todo.id}/checkbox`, todo);
+    return response.data;
+    }
+
 export const deleteTodo = async (id) => {
     const response = await instance.delete(`/todo/${id}`);
     return response.data;

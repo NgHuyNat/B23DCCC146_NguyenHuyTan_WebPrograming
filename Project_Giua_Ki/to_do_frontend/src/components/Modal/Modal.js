@@ -1,6 +1,5 @@
-// Modal.js
 import React from 'react';
-import './Modal.css'; // Tạo một file CSS để tạo kiểu cho modal
+import './Modal.css'; 
 
 function Modal({ isOpen, onClose, children }) {
   if (!isOpen) return null;

@@ -54,6 +54,7 @@ function TodoList() {
         } catch (error) {
             console.error("Error adding todo:", error);
         }
+        getAllTodos();
     };
 
     return (

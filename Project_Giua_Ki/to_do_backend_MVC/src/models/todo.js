@@ -22,6 +22,13 @@ const Todo = {
         });
     },
 
+    updateCheckbox: (data, callback) => {
+        db.query('UPDATE todo SET completed = ? WHERE id = ?', [data.completed, data.id], (err, results) => {
+            if (err) return callback(err);
+            callback(null, results);
+        });
+    },
+
     delete: (id, callback) => {
         db.query('DELETE FROM todo WHERE id = ?', [id], (err, results) => {
             if (err) return callback(err);

@@ -21,6 +21,14 @@ exports.updateTodo = (req, res) => {
         res.status(200).json({ message: 'Todo updated successfully' });
 })}
 
+exports.updateCheckbox = (req, res) => {
+    const { completed } = req.body;
+    const { id } = req.params;
+    Todo.updateCheckbox({ completed, id }, (err, result) => {
+        if (err) return res.status(500).json({error : err});
+        res.status(200).json({ message: 'Todo updated successfully' });
+})}
+
 exports.deleteTodo = (req, res) => {
     const { id } = req.params;
     Todo.delete(id, (err, result) => {

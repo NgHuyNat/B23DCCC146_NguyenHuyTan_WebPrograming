@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { updateTodo, deleteTodo } from '../../config/apiConfig';
+import { updateTodo, deleteTodo,updateCheckbox } from '../../config/apiConfig';
 import Modal from "../Modal/Modal";
 import '../../../src/index.css';
 
-function TodoItem({ todo, setTodos, todos, getAllTodos }) {
+function TodoItem({ todo, getAllTodos }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState(todo.title);
   const [editedDescription, setEditedDescription] = useState(todo.description);
@@ -12,15 +12,18 @@ function TodoItem({ todo, setTodos, todos, getAllTodos }) {
   const [completed, setCompleted] = useState(todo.completed);
 
   const handleToggleComplete = async () => {
-    const newCompleted = completed === 1 ? 0 : 1;
-    setCompleted(newCompleted);
-
-    setTodos(todos.map((t) => (t.id === todo.id ? { ...t, completed: newCompleted } : t)));
-
     try {
-      await updateTodo({ ...todo, completed: newCompleted });
+      const newCompleted = completed === 1 ? 0 : 1;
+      const updatedTodo = {
+        ...todo,
+        completed: newCompleted
+      };
+      console.log(updatedTodo);
+      await updateCheckbox(updatedTodo);
+      setCompleted(newCompleted);
+      getAllTodos();
     } catch (error) {
-      console.error('Error updating todo:', error);
+      console.error('Error toggling complete:', error);
     }
   };
 
