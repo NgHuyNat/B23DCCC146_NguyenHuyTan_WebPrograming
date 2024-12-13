@@ -1,0 +1,71 @@
+    .header {
+        display: flex;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        width: 100%;
+    }
+
+    .shipper-header {
+        margin-left: 20px;
+        width: 20%;
+    }
+
+    .order-assigned {
+        width: 40%;
+    }
+
+    .oders-header {
+        width: 50%;
+    }
+
+    .container-dispatch {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .shippers {
+        width: 20%;
+    }
+
+    .list-assigned {
+        width: 30%;
+    }
+
+    .list-non-assigned {
+        width: 50%;
+    }
+
+    .card {
+        width: 200px;
+        height: 150px;
+        border: 1px solid black;
+        border-radius: 15px;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: flex-start;
+        margin-top: 10px;
+    }
+
+    .card-image {
+        width: 50px;
+        height: 50px;
+        background-color: lightgray;
+        border-radius: 10px;
+        margin-bottom: 10px;
+    }
+
+    .card-content p {
+        margin: 5px 0;
+        font-size: 14px;
+    }
+
+    .order-assigned-card {
+        border: 1px solid black;
+        width: fit-content;
+        border-radius: 15px;
+        align-items: flex-start;
+        margin-top: 10px;
+    }

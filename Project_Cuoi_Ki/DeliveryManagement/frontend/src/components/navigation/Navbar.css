@@ -1,0 +1,43 @@
+.logo{
+    margin-left: 20px;
+    width: 60px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.navbar{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fff;
+    padding: 15px 7;
+}
+
+ul{
+    flex: 1;
+    list-style: none;
+    text-align: center;
+}
+
+ul li{
+    display: inline-block;
+    margin: 10px 20px;
+    font-size: 18px;
+    cursor: pointer;
+    user-select: none;
+    color: #000;
+}
+
+.mode{
+    width: 25px;
+    cursor: pointer;
+    margin-right: 20px;
+    user-select: none;
+    margin-top: -8px;
+}
+
+.no-underline {
+    text-decoration: none;
+    color: #000;
+  }
