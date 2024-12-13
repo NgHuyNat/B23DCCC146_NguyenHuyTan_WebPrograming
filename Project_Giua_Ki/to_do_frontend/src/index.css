@@ -22,7 +22,7 @@ code {
 
 .floating-container {
   width: fit-content;
-  max-width: 500px;
+  /* max-width: 500px; */
   background-color: white;
   padding: 20px;
   padding-bottom: 40px;

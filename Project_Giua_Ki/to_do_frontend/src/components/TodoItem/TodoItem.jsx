@@ -79,6 +79,9 @@ function TodoItem({ todo, getAllTodos }) {
           />
         </td>
         <td>
+          <button onClick={() => { setIsModalOpen(true); setIsEditing(false); }}>View</button>
+        </td>
+        <td>
           <button onClick={() => { setIsModalOpen(true); setIsEditing(true); }}>Edit</button>
           <button onClick={handleDeleteTodo}>Delete</button>
         </td>

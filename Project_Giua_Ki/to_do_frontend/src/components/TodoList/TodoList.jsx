@@ -12,6 +12,12 @@ function TodoList() {
         due_date: "",
         completed: 0
     });
+    const [newOwner, setNewOwner] = useState({
+        name: "",
+        email:"",
+        mobile: "",
+    });
+
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const getAllTodos = async () => {
@@ -69,6 +75,7 @@ function TodoList() {
                             <th>Description</th>
                             <th>Due Date</th>
                             <th>Completed</th>
+                            <th>Owner</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -88,6 +95,7 @@ function TodoList() {
                 </table>
                 <div className="button-container">
                     <button className="add-button" onClick={() => setIsModalOpen(true)}>Add Todo</button>
+                    <button className="add-button" onClick={() => setIsModalOpen(true)}>Add Owner</button>
                 </div>
             </div>
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
@@ -122,9 +130,40 @@ function TodoList() {
                         <button onClick={() => setIsModalOpen(false)} className="small-button">Close</button>
                     </div>
                 </div>
-
             </Modal>
+            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+                <div className="table-addTodo">
+                    <h2 className="header-addnew">Add New Owner</h2>
+                    <div className="input-text">
+                        <input
+                            type="text"
+                            value={newTodo.title}
+                            placeholder="New Title"
+                            onChange={(e) => setNewTodo({ ...newTodo, title: e.target.value })}
+                        />
+                    </div>
+                    <div className="input-text">
+                        <input
+                            type="text"
+                            value={newTodo.description}
+                            placeholder="New Description"
+                            onChange={(e) => setNewTodo({ ...newTodo, description: e.target.value })}
+                        />
+                    </div>
+                    <div className="input-text">
+                        <input
+                            type="date"
+                            value={newTodo.due_date}
+                            onChange={(e) => setNewTodo({ ...newTodo, due_date: e.target.value })}
+                        />
+                    </div>
 
+                    <div className="modal-buttons">
+                        <button onClick={handleAddTodo} className="small-button">Save</button>
+                        <button onClick={() => setIsModalOpen(false)} className="small-button">Close</button>
+                    </div>
+                </div>
+            </Modal>
         </div>
     );
 }
