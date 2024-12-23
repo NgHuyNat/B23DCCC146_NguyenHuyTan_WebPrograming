@@ -22,14 +22,23 @@ exports.getShipperById = (req, res) => {
 
 exports.addShipper = (req, res) => {
     const shipper = req.body;
-    Shipper.addShipper(shipper, (err, shipper) => {
+
+    Shipper.addShipper(shipper, (err) => {
         if (err) {
-            res.send(err);
+            res.status(500).send(err);
+            return;
         }
         console.log('Add Shipper Successful');
-        res.send(shipper);
+        
+        Shipper.getAllShippers((err, shippers) => {
+            if (err) {
+                res.status(500).send(err);
+            } else {
+                res.status(200).send(shippers);
+            }
+        });
     });
-}
+};
 
 exports.updateShipper = (req, res) => {
     const shipper = req.body;

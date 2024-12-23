@@ -1,0 +1,30 @@
+.driver-container {
+    padding-top: 80px;
+    width: 90%;
+    margin: 0 auto;
+}
+
+.search{
+    width: 30%;
+    margin-top: 20px;
+}
+
+.search input{
+    width: 100%;
+    padding: 10px;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+}
+
+.add{
+    margin-top: 20px;
+}
+
+.add button{
+    padding: 5px;
+    border-radius: 20px;
+}
+
+.table-header{
+    border-radius: 20px;
+}

@@ -1,7 +1,7 @@
 const db = require('../configs/database');
 
 const Province = {
-    getAllProvinces:(callback) => {
+    getAllProvinces: (callback) => {
         return db.query("SELECT * FROM province", (err, results) => {
             if (err) {
                 console.log(err);
@@ -12,7 +12,7 @@ const Province = {
     },
 
     getProvinceById: (id, callback) => {
-        return db.query("SELECT * FROM province WHERE id=?", [id], (err, results) => {
+        return db.query("SELECT * FROM province WHERE province_id=?", [id], (err, results) => {
             if (err) {
                 console.log(err);
                 return callback(err, null);
@@ -21,7 +21,7 @@ const Province = {
         });
     },
 
-    addProvince: (data, callback)  => {
+    addProvince: (data, callback) => {
         return db.query(
             "INSERT INTO province(province_name, name_extension ,order_id) VALUES(?, ?, ?)",
             [data.province_name, data.name_extension, data.order_id], (err, results) => {
@@ -30,10 +30,10 @@ const Province = {
                     return callback(err, null);
                 }
                 return callback(null, results);
-             });
+            });
     },
 
-    deleteProvince: function(id, callback) {
+    deleteProvince: function (id, callback) {
         return db.query("DELETE FROM province WHERE id=?", [id], (err, results) => {
             if (err) {
                 console.log(err);
@@ -43,7 +43,7 @@ const Province = {
         });
     },
 
-    updateProvince: function(data, callback) {
+    updateProvince: function (data, callback) {
         return db.query(
             "UPDATE province SET province_name = ?, name_extension = ? ,order_id = ? WHERE id=?",
             [data.province_name, data.name_extension, data.order_id], (err, results) => {

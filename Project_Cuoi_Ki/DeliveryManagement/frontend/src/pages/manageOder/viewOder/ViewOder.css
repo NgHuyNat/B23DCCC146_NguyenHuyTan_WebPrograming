@@ -1,3 +1,9 @@
+.vieworder-container {
+    padding-top: 80px;
+    width: 90%;
+    margin: 0 auto;
+}
+
 .header{
     display: flex;
     justify-content: space-between;

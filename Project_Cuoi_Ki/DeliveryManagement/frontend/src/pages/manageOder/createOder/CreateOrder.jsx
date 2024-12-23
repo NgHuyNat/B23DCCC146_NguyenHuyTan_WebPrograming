@@ -4,13 +4,11 @@ import Select from 'react-select';
 import instance from '../../../configs/ApiConfigs';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import axios from 'axios';
+import Modal from '../../../components/modal/Modal';
 
 function CreateOrder() {
     const [provinces, setProvinces] = useState([]); // Danh sách tỉnh/thành phố
-    const [districts, setDistricts] = useState([]); // Danh sách quận/huyện
-    const [wards, setWards] = useState([]);
-    const [loadingDistricts, setLoadingDistricts] = useState(false); // Loading quận/huyện
-    const [loadingWards, setLoadingWards] = useState(false); //
     const [senderProvince, setSenderProvince] = useState(null);
     const [senderDistricts, setSenderDistricts] = useState([]);
     const [senderDistrict, setSenderDistrict] = useState(null);
@@ -29,6 +27,43 @@ function CreateOrder() {
     const [returnWards, setReturnWards] = useState([]);
     const [returnWard, setReturnWard] = useState(null);
 
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false); // Quản lý modal
+    const [senderInfo, setSenderInfo] = useState({
+        full_name: '',
+        phone_number: '',
+        address: '',
+        province: '',
+        district: '',
+        ward: '',
+    });
+
+
+
+    const [requiredNotes, setRequiredNotes] = useState([
+        { value: 'Fragile', label: 'Hàng dễ vỡ' },
+        { value: 'Heavy', label: 'Hàng nặng' },
+        { value: 'Liquid', label: 'Hàng chứa chất lỏng' },
+        { value: 'Standard', label: 'Hàng tiêu chuẩn' },
+        { value: 'Fast', label: 'Giao hàng hỏa tốc' },
+        { value: 'Standard', label: 'Giao hàng tiêu chuẩn' },
+        { value: '!Check', label: 'Không cho kiểm tra' },
+        { value: 'Check', label: 'Cho kiểm tra' },
+        { value: '!Test', label: 'Không cho thử' },
+        { value: 'Test', label: 'Cho thử' },
+    ]); // Đây là danh sách required note
+
+    const [selectedRequiredNote, setSelectedRequiredNote] = useState(null); // Giá trị đã chọn
+
+    const [user, setUser] = useState({
+        full_name: '',
+        email: '',
+        phone_number: '',
+        address: '',
+        ward: '',
+        district: '',
+        province: '',
+    });
+
     const [newItem, setNewItem] = useState({
         item_name: "",
         length: "",
@@ -37,6 +72,56 @@ function CreateOrder() {
         weight: "",
         item_order_code: "",
     });
+
+    const resetForm = () => {
+        setNewOders({
+            return_phone: "",
+            return_address: "",
+            return_ward: "",
+            return_district: "",
+            return_province: "",
+            to_name: "",
+            to_phone: "",
+            to_address: "",
+            to_ward: "",
+            to_district: "",
+            to_province: "",
+            required_note: "",
+            note: "",
+            cod_amount: "",
+            total_fee: "",
+            content: "",
+            weight: "",
+            height: "",
+            pick_station_id: "",
+            deliver_station_id: "",
+            payment_type_id: "",
+            item_id: "",
+            shipper_id: "",
+        });
+    
+        setNewItem({
+            item_name: "",
+            length: "",
+            width: "",
+            height: "",
+            weight: "",
+            item_order_code: "",
+        });
+        
+        setSelectedRequiredNote([]);
+        setReceiverProvince(null);
+        setReceiverDistrict(null);
+        setReceiverWard(null);
+        setReturnProvince(null);
+        setReturnDistrict(null);
+        setReturnWard(null);
+        setSenderProvince(null);
+        setSenderDistrict(null);
+        setSenderWard(null);
+    
+    };
+    
 
     const [newOders, setNewOders] = useState({
         from_name: "",
@@ -70,6 +155,82 @@ function CreateOrder() {
         shipper_id: "",
     });
 
+
+    const handleSaveSenderInfo = () => {
+        if (!senderInfo.full_name || !senderInfo.phone_number || !senderInfo.address || !senderInfo.province || !senderInfo.district || !senderInfo.ward) {
+            alert('Vui lòng điền đầy đủ thông tin!');
+            return;
+        }
+
+        const newAddress = senderInfo.address;
+
+        const updatedSenderInfo = {
+            ...senderInfo,
+            address: newAddress, // Chỉ cập nhật 1 địa chỉ
+        };
+
+        setSenderInfo(updatedSenderInfo);
+
+        console.log('Updated Sender Info:', updatedSenderInfo);
+
+        // Gọi `saveToBackend` để gửi thông tin
+        saveToBackend(updatedSenderInfo);
+
+        setIsEditModalOpen(false); // Đóng modal
+    };
+
+    const saveToBackend = async (senderInfo) => {
+        const payload = {
+            full_name: senderInfo.full_name,
+            phone_number: senderInfo.phone_number,
+            address: senderInfo.address, 
+            province: provinces.find((p) => p.value === senderInfo.province)?.label, 
+            district: senderDistricts.find((d) => d.value === senderInfo.district)?.label, 
+            ward: senderWards.find((w) => w.value === senderInfo.ward)?.label, 
+        };
+    
+        console.log('Payload gửi lên backend:', payload);
+    
+        try {
+            const token = localStorage.getItem('token'); // Lấy token từ localStorage
+            const response = await axios.put('http://localhost:3010/auth/profile', payload, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`, // Gửi token trong header
+                },
+            });
+    
+            // Cập nhật lại user với dữ liệu trả về
+            setUser({
+                full_name: payload.full_name,
+                phone_number: payload.phone_number,
+                address: payload.address,
+                province: payload.province,
+                district: payload.district,
+                ward: payload.ward,
+            });
+
+            toast.success('Cập nhật thành công!');
+        } catch (error) {
+            console.error('Lỗi khi cập nhật:', error.response?.data || error.message);
+            toast.error('Có lỗi xảy ra khi cập nhật!');
+        }
+    };
+
+    const handleEditSenderInfo = () => {
+        setSenderInfo({
+            full_name: user.full_name,
+            phone_number: user.phone_number,
+            address: user.address || '',
+            province: user.province || '',
+            district: user.district || '',
+            ward: user.ward || '',
+        });
+        setIsEditModalOpen(true); // Mở modal
+    };
+
+
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setNewOders({
@@ -85,6 +246,32 @@ function CreateOrder() {
             [name]: value,
         });
     };
+
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await axios.get('http://localhost:3010/auth/profile', {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                setNewOders((prev) => ({
+                    ...prev,
+                    from_name: response.data.full_name,
+                    from_phone: response.data.phone_number,
+                    from_address: response.data.address,
+                    from_province: response.data.province,
+                    from_district: response.data.district,
+                    from_ward: response.data.ward,
+                }));
+                console.log('Profile:', response.data);
+                setUser(response.data);
+                console.log('User:', user);
+            } catch (error) {
+                console.error('Error fetching profile:', error.response?.data || error.message);
+            }
+        };
+        fetchProfile();
+    }, []);
 
     const fetchProvinces = async () => {
         try {
@@ -102,7 +289,6 @@ function CreateOrder() {
     };
 
     const fetchDistricts = async (province_id) => {
-        setLoadingDistricts(true);
         try {
             console.log("Fetching districts for province_id:", province_id);
             const response = await instance.get(`/district/districtbyprovince/${province_id}`);
@@ -116,14 +302,11 @@ function CreateOrder() {
             setReturnDistricts(districtsData);
         } catch (error) {
             console.error("Error fetching districts:", error);
-        } finally {
-            setLoadingDistricts(false);
         }
     };
 
 
     const fetchWards = async (district_id) => {
-        setLoadingWards(true);
         try {
             const response = await instance.get(`/ward/wardbydistrict/${district_id}`);
             const wardsData = response.data.map((item) => ({
@@ -136,12 +319,8 @@ function CreateOrder() {
             setReturnWards(wardsData);
         } catch (error) {
             console.error("Error fetching wards:", error);
-        } finally {
-            setLoadingWards(false);
         }
     };
-
-
 
     useEffect(() => {
         fetchProvinces();
@@ -160,410 +339,461 @@ function CreateOrder() {
         } if (!newOders.weight || !newOders.height || !newOders.pick_station_id || !newOders.deliver_station_id || !newOders.payment_type_id) {
             toast.warn("Please fill in product information!");
             return;
-        } 
-        // if (!newItem.item_name || !newItem.length || !newItem.width || !newItem.height || !newItem.weight || !newItem.item_order_code) {
-        //     toast.warn("Please fill in item information!");
-        //     return;
-        // }
+        }
+        if (!newItem.item_name || !newItem.length || !newItem.width || !newItem.height || !newItem.weight || !newItem.item_order_code) {
+            toast.warn("Please fill in item information!");
+            return;
+        }
         try {
             // Gửi dữ liệu sản phẩm
-            let createdItem = null;
-            try {
-                const itemResponse = await instance.post(
-                    "/item",
-                    newItem,
-                    {
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                    }
-                );
-                createdItem = itemResponse.data;
-                toast.success("Created Item successfully!");
-            } catch (itemError) {
-                console.error("Error creating item:", itemError);
-                toast.error("Failed to create item!");
-                return; // Nếu không tạo được item thì không tiếp tục
-            }
-        
-            try {
-                const updatedOrder = {
-                    ...newOders,
-                    item_id: createdItem.item_id, // Sử dụng item_id từ kết quả trả về
-                };
-        
-                const orderResponse = await instance.post(
-                    "/order",
-                    updatedOrder,
-                    {
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                    }
-                );
-                const createdOrder = orderResponse.data;
-                toast.success(`Created Order: ${JSON.stringify(createdOrder)}`);
-            } catch (orderError) {
-                console.error("Error creating order:", orderError);
-                toast.error("Failed to create order!");
-            }
-        } catch (error) {
-            console.error("Unexpected error:", error);
-            toast.error("An unexpected error occurred!");
-        }
-        
-    };
+            const itemResponse = await instance.post("/item", newItem, {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
 
+            console.log("Item Response:", itemResponse.data);
+
+            // Kiểm tra nếu có insertId
+            if (!itemResponse.data || !itemResponse.data.insertId) {
+                toast.error("Failed to retrieve item_id!");
+                return;
+            }
+
+            // Sử dụng insertId làm item_id
+            const createdItemId = itemResponse.data.insertId;
+
+            const updatedOrder = {
+                ...newOders,
+                item_id: createdItemId, // Gắn insertId vào item_id
+                required_note: JSON.stringify(newOders.required_note || []), // Chuyển thành JSON nếu cần
+            };
+
+            const orderResponse = await instance.post("/order", updatedOrder, {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            console.log("Order Response:", orderResponse.data);
+            toast.success("Created Order successfully!");
+            resetForm();
+        } catch (error) {
+            console.error("Error creating item or order:", error.response?.data || error.message);
+            toast.error("Failed to create item or order!");
+        }
+    };
 
     return (
         <>
-            <h2>Create Order</h2>
-            <div className='form-orders'>
-                <div className='infor-address-from-to'>
-                    {/* Form đơn hàng */}
-                    <h3>Bên gửi</h3>
-                    <input
-                        type="text"
-                        name="from_name"
-                        placeholder="From Name"
-                        value={newOders.from_name}
-                        onChange={handleInputChange}
-                    />
-                    <input
-                        type="text"
-                        name="from_phone"
-                        placeholder="Số người gửi"
-                        value={newOders.from_phone}
-                        onChange={handleInputChange}
-                    />
-                    <input
-                        type="text"
-                        name="from_address"
-                        placeholder="Địa chỉ người gửi"
-                        value={newOders.from_address}
-                        onChange={handleInputChange}
-                    />
-                    <p>Tỉnh - Thành phố</p>
-                    <Select
-                        options={provinces}
-                        value={senderProvince}
-                        onChange={(selectedOption) => {
-                            setSenderProvince(selectedOption);
-                            setSenderDistrict(null);
-                            setSenderWard(null);
-                            setSenderDistricts([]);
-                            setSenderWards([]);
-                            fetchDistricts(selectedOption.value, setSenderDistricts);
-                            setNewOders((prev) => ({
-                                ...prev,
-                                from_province: selectedOption.label
-                            }));
-                        }}
-                        placeholder="Chọn Tỉnh/Thành phố"
-                    />
-                    <p>Quận - Huyện</p>
-                    <Select
-                        options={senderDistricts}
-                        value={senderDistrict}
-                        onChange={(selectedOption) => {
-                            setSenderDistrict(selectedOption);
-                            setSenderWard(null);
-                            setSenderWards([]);
-                            fetchWards(selectedOption.value, setSenderWards);
-                            setNewOders((prev) => ({
-                                ...prev,
-                                from_district: selectedOption.label
-                            }));
-                        }}
-                        placeholder="Chọn Quận/Huyện"
-                        isDisabled={!senderProvince}
-                    />
+            <div className='create-container'>
+                <h2>Create Order</h2>
+                <div className='form-orders'>
+                    <div className='infor-address-from-to'>
+                        {/* Form đơn hàng */}
+                        <div className='phongbi-container'>
+                            <div className='phongbi-item'>
+                                <h3>Bên gửi</h3>
+                                {user && (
+                                    <>
+                                        <p><strong>{user.full_name}</strong></p>
+                                        <p>{user.phone_number}</p>
+                                        <p>
+                                            {`${user.address}, ${user.ward}, ${user.district}, ${user.province}`}
+                                        </p>
+                                    </>
+                                )}
+                                <button onClick={handleEditSenderInfo}>Sửa địa chỉ gửi hàng</button>
+                                {isEditModalOpen && (
+                                    <Modal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)}>
+                                        <div className="edit-sender-info">
+                                            <h2>Thêm địa chỉ gửi hàng</h2>
+                                            {/* Họ tên */}
+                                            <input
+                                                type="text"
+                                                name="full_name"
+                                                placeholder="Họ tên"
+                                                value={senderInfo.full_name}
+                                                onChange={(e) =>
+                                                    setSenderInfo((prev) => ({
+                                                        ...prev,
+                                                        full_name: e.target.value,
+                                                    }))
+                                                }
+                                            />
+                                            {/* Số điện thoại */}
+                                            <input
+                                                type="text"
+                                                name="phone_number"
+                                                placeholder="Số điện thoại"
+                                                value={senderInfo.phone_number}
+                                                onChange={(e) =>
+                                                    setSenderInfo((prev) => ({
+                                                        ...prev,
+                                                        phone_number: e.target.value,
+                                                    }))
+                                                }
+                                            />
+                                            {/* Địa chỉ chi tiết */}
+                                            <input
+                                                type="text"
+                                                name="address"
+                                                placeholder="Địa chỉ chi tiết"
+                                                value={senderInfo.address}
+                                                onChange={(e) =>
+                                                    setSenderInfo((prev) => ({
+                                                        ...prev,
+                                                        address: e.target.value,
+                                                    }))
+                                                }
+                                            />
+                                            {/* Tỉnh - Thành phố */}
+                                            <p>Tỉnh - Thành phố</p>
+                                            <Select
+                                                options={provinces}
+                                                value={provinces.find((p) => p.value === senderInfo.province)} // Tìm đối tượng dựa trên `value`
+                                                onChange={(selectedOption) => {
+                                                    setSenderInfo((prev) => ({
+                                                        ...prev,
+                                                        province: selectedOption.value, // Lưu `value` để gửi API
+                                                        provinceLabel: selectedOption.label, // Lưu `label` nếu cần hiển thị
+                                                        district: '', // Reset quận khi tỉnh thay đổi
+                                                        ward: '', // Reset phường khi tỉnh thay đổi
+                                                    }));
+                                                    setSenderDistricts([]);
+                                                    setSenderWards([]);
+                                                    fetchDistricts(selectedOption.value); // Gọi API lấy danh sách quận
+                                                }}
+                                                placeholder="Chọn Tỉnh/Thành phố"
+                                            />
+                                            {/* Quận - Huyện */}
+                                            <p>Quận - Huyện</p>
+                                            <Select
+                                                options={senderDistricts}
+                                                value={senderDistricts.find((d) => d.value === senderInfo.district)}
+                                                onChange={(selectedOption) => {
+                                                    setSenderInfo((prev) => ({
+                                                        ...prev,
+                                                        district: selectedOption.value, // Lưu mã quận
+                                                        ward: '', // Xóa phường/xã khi quận thay đổi
+                                                    }));
+                                                    setSenderWards([]); // Reset phường/xã
+                                                    fetchWards(selectedOption.value, setSenderWards); // Gọi API tải phường/xã
+                                                }}
+                                                placeholder="Chọn Quận/Huyện"
+                                                isDisabled={!senderInfo.province} // Chỉ cho phép chọn nếu đã chọn tỉnh
+                                            />
+                                            {/* Phường - Xã */}
+                                            <p>Phường - Xã</p>
+                                            <Select
+                                                options={senderWards}
+                                                value={senderWards.find((w) => w.value === senderInfo.ward)}
+                                                onChange={(selectedOption) =>
+                                                    setSenderInfo((prev) => ({
+                                                        ...prev,
+                                                        ward: selectedOption.value, // Lưu mã phường
+                                                    }))
+                                                }
+                                                placeholder="Chọn Phường/Xã"
+                                                isDisabled={!senderInfo.district} // Chỉ cho phép chọn nếu đã chọn quận
+                                            />
+                                            {/* Nút hành động */}
+                                            <div className="modal-buttons">
+                                                <button onClick={handleSaveSenderInfo}>Cập nhật</button>
+                                                <button onClick={() => setIsEditModalOpen(false)}>Hủy</button>
+                                            </div>
+                                        </div>
+                                    </Modal>
+                                )}
+                                <h3>Bên nhận</h3>
+                                <input
+                                    type="text"
+                                    name="to_name"
+                                    placeholder="To Name"
+                                    value={newOders.to_name}
+                                    onChange={handleInputChange}
+                                />
+                                <input
+                                    type='text'
+                                    name='to_phone'
+                                    placeholder='Số điện thoại người nhận'
+                                    value={newOders.to_phone}
+                                    onChange={handleInputChange}
+                                />
+                                <input
+                                    type='text'
+                                    name='to_address'
+                                    placeholder='Địa chỉ người nhận'
+                                    value={newOders.to_address}
+                                    onChange={handleInputChange}
+                                />
+                                <p>Tỉnh - Thành phố</p>
+                                <Select
+                                    options={provinces}
+                                    value={receiverProvince}
+                                    isSearchable={true}
+                                    onChange={(selectedOption) => {
+                                        setReceiverProvince(selectedOption);
+                                        setReceiverDistrict(null);
+                                        setReceiverWard(null);
+                                        setReceiverDistricts([]);
+                                        setReceiverWards([]);
+                                        fetchDistricts(selectedOption.value, setReceiverDistricts);
+                                        setNewOders((prev) => ({
+                                            ...prev,
+                                            to_province: selectedOption.label
+                                        }));
+                                    }}
+                                    placeholder="Chọn Tỉnh/Thành phố"
+                                />
+                                <p>Quận - Huyện</p>
+                                <Select
+                                    options={receiverDistricts}
+                                    value={receiverDistrict}
+                                    isSearchable={true}
+                                    onChange={(selectedOption) => {
+                                        setReceiverDistrict(selectedOption);
+                                        setReceiverWard(null);
+                                        setReceiverWards([]);
+                                        fetchWards(selectedOption.value, setReceiverWards);
+                                        setNewOders((prev) => ({
+                                            ...prev,
+                                            to_district: selectedOption.label
+                                        }));
+                                    }}
+                                    placeholder="Chọn Quận/Huyện"
+                                    isDisabled={!receiverProvince}
+                                />
 
-                    <p>Phường - Xã</p>
-                    <Select
-                        options={senderWards}
-                        value={senderWard}
-                        onChange={(selectedOption) => {
-                            setSenderWard(selectedOption);
-                            setNewOders((prev) => ({
-                                ...prev,
-                                from_ward: selectedOption.label
-                            }));
-                        }}
-                        placeholder="Chọn Phường/Xã"
-                        isDisabled={!senderDistrict}
-                    />
+                                <p>Phường - Xã</p>
+                                <Select
+                                    options={receiverWards}
+                                    value={receiverWard}
+                                    isSearchable={true}
+                                    onChange={(selectedOption) => {
+                                        setReceiverWard(selectedOption);
+                                        setNewOders((prev) => ({
+                                            ...prev,
+                                            to_ward: selectedOption.label
+                                        }));
+                                    }}
+                                    placeholder="Chọn Phường/Xã"
+                                    isDisabled={!receiverDistrict}
+                                />
+                                <h3>Trả hàng</h3>
+                                <input
+                                    type='text'
+                                    name='return_phone'
+                                    placeholder='Số điện thoại trả hàng'
+                                    value={newOders.return_phone}
+                                    onChange={handleInputChange}
+                                />
+                                <input
+                                    type='text'
+                                    name='return_address'
+                                    placeholder='Địa chỉ trả hàng'
+                                    value={newOders.return_address}
+                                    onChange={handleInputChange}
+                                />
+                                <p>Tỉnh - Thành phố</p>
+                                <Select
+                                    options={provinces}
+                                    value={returnProvince}
+                                    isSearchable={true}
+                                    onChange={(selectedOption) => {
+                                        setReturnProvince(selectedOption);
+                                        setReturnDistrict(null);
+                                        setReturnWard(null);
+                                        setReturnDistricts([]);
+                                        setReturnWards([]);
+                                        fetchDistricts(selectedOption.value, setReturnDistricts);
+                                        setNewOders((prev) => ({
+                                            ...prev,
+                                            return_province: selectedOption.label
+                                        }));
+                                    }}
+                                    placeholder="Chọn Tỉnh/Thành phố"
+                                />
+                                <p>Quận - Huyện</p>
+                                <Select
+                                    options={returnDistricts}
+                                    value={returnDistrict}
+                                    isSearchable={true}
+                                    onChange={(selectedOption) => {
+                                        setReturnDistrict(selectedOption);
+                                        setReturnWard(null);
+                                        setReturnWards([]);
+                                        fetchWards(selectedOption.value, setReturnWards);
+                                        setNewOders((prev) => ({
+                                            ...prev,
+                                            return_district: selectedOption.label
+                                        }));
+                                    }}
+                                    placeholder="Chọn Quận/Huyện"
+                                    isDisabled={!receiverProvince}
+                                />
 
-                    <h3>Bên nhận</h3>
-                    <input
-                        type="text"
-                        name="to_name"
-                        placeholder="To Name"
-                        value={newOders.to_name}
-                        onChange={handleInputChange}
-                    />
-                    <input
-                        type='text'
-                        name='to_phone'
-                        placeholder='Số điện thoại người nhận'
-                        value={newOders.to_phone}
-                        onChange={handleInputChange}
-                    />
-                    <input
-                        type='text'
-                        name='to_address'
-                        placeholder='Địa chỉ người nhận'
-                        value={newOders.to_address}
-                        onChange={handleInputChange}
-                    />
-                    <p>Tỉnh - Thành phố</p>
-                    <Select
-                        options={provinces}
-                        value={receiverProvince}
-                        onChange={(selectedOption) => {
-                            setReceiverProvince(selectedOption);
-                            setReceiverDistrict(null);
-                            setReceiverWard(null);
-                            setReceiverDistricts([]);
-                            setReceiverWards([]);
-                            fetchDistricts(selectedOption.value, setReceiverDistricts);
-                            setNewOders((prev) => ({
-                                ...prev,
-                                to_province: selectedOption.label
-                            }));
-                        }}
-                        placeholder="Chọn Tỉnh/Thành phố"
-                    />
-                    <p>Quận - Huyện</p>
-                    <Select
-                        options={receiverDistricts}
-                        value={receiverDistrict}
-                        onChange={(selectedOption) => {
-                            setReceiverDistrict(selectedOption);
-                            setReceiverWard(null);
-                            setReceiverWards([]);
-                            fetchWards(selectedOption.value, setReceiverWards);
-                            setNewOders((prev) => ({
-                                ...prev,
-                                to_district: selectedOption.label
-                            }));
-                        }}
-                        placeholder="Chọn Quận/Huyện"
-                        isDisabled={!receiverProvince}
-                    />
+                                <p>Phường - Xã</p>
+                                <Select
+                                    options={returnWards}
+                                    value={returnWard}
+                                    isSearchable={true}
+                                    onChange={(selectedOption) => {
+                                        setReturnWard(selectedOption);
+                                        setNewOders((prev) => ({
+                                            ...prev,
+                                            return_ward: selectedOption.label
+                                        }));
+                                    }}
+                                    placeholder="Chọn Phường/Xã"
+                                    isDisabled={!receiverDistrict}
+                                />
+                            </div>
+                        </div>
 
-                    <p>Phường - Xã</p>
-                    <Select
-                        options={receiverWards}
-                        value={receiverWard}
-                        onChange={(selectedOption) => {
-                            setReceiverWard(selectedOption);
-                            setNewOders((prev) => ({
-                                ...prev,
-                                to_ward: selectedOption.label
-                            }));
-                        }}
-                        placeholder="Chọn Phường/Xã"
-                        isDisabled={!receiverDistrict}
-                    />
-                    <h3>Trả hàng</h3>
-                    <input
-                        type='text'
-                        name='return_phone'
-                        placeholder='Số điện thoại trả hàng'
-                        value={newOders.return_phone}
-                        onChange={handleInputChange}
-                    />
-                    <input
-                        type='text'
-                        name='return_address'
-                        placeholder='Địa chỉ trả hàng'
-                        value={newOders.return_address}
-                        onChange={handleInputChange}
-                    />
-                    <p>Tỉnh - Thành phố</p>
-                    <Select
-                        options={provinces}
-                        value={returnProvince}
-                        onChange={(selectedOption) => {
-                            setReturnProvince(selectedOption);
-                            setReturnDistrict(null);
-                            setReturnWard(null);
-                            setReturnDistricts([]);
-                            setReturnWards([]);
-                            fetchDistricts(selectedOption.value, setReturnDistricts);
-                            setNewOders((prev) => ({
-                                ...prev,
-                                return_province: selectedOption.label
-                            }));
-                        }}
-                        placeholder="Chọn Tỉnh/Thành phố"
-                    />
-                    <p>Quận - Huyện</p>
-                    <Select
-                        options={returnDistricts}
-                        value={returnDistrict}
-                        onChange={(selectedOption) => {
-                            setReturnDistrict(selectedOption);
-                            setReturnWard(null);
-                            setReturnWards([]);
-                            fetchWards(selectedOption.value, setReturnWards);
-                            setNewOders((prev) => ({
-                                ...prev,
-                                return_district: selectedOption.label
-                            }));
-                        }}
-                        placeholder="Chọn Quận/Huyện"
-                        isDisabled={!receiverProvince}
-                    />
 
-                    <p>Phường - Xã</p>
-                    <Select
-                        options={returnWards}
-                        value={returnWard}
-                        onChange={(selectedOption) => {
-                            setReturnWard(selectedOption);
-                            setNewOders((prev) => ({
-                                ...prev,
-                                return_ward: selectedOption.label
-                            }));
-                        }}
-                        placeholder="Chọn Phường/Xã"
-                        isDisabled={!receiverDistrict}
-                    />
-
-                    <h3>Thông tin sản phẩm</h3>
-                    <input
-                        type='text'
-                        name='weight'
-                        placeholder='Cân nặng'
-                        value={newOders.weight}
-                        onChange={handleInputChange}
-                    />
-                    <input
-                        type='text'
-                        name='height'
-                        placeholder='Chiều cao'
-                        value={newOders.height}
-                        onChange={handleInputChange}
-                    />
-                    <input
-                        type='number'
-                        name='pick_station_id'
-                        placeholder='ID bưu cục gửi'
-                        value={newOders.pick_station_id}
-                        onChange={handleInputChange}
-                    />
-                    <input
-                        type='number'
-                        name='deliver_station_id'
-                        placeholder='ID bưu cục nhận'
-                        value={newOders.deliver_station_id}
-                        onChange={handleInputChange}
-                    />
-                    <input
-                        type='number'
-                        name='payment_type_id'
-                        placeholder='ID loại thanh toán'
-                        value={newOders.payment_type_id}
-                        onChange={handleInputChange}
-                    />
-                    <h3>Thông tin đơn hàng</h3>
-                    <input
-                        type="text"
-                        name="item_name"
-                        placeholder="Item Name"
-                        value={newItem.item_name}
-                        onChange={handleItemChange}
-                    />
-                    <input
-                        type="number"
-                        name="length"
-                        placeholder="Length"
-                        value={newItem.length}
-                        onChange={handleItemChange}
-                    />
-                    <input
-                        type="number"
-                        name="width"
-                        placeholder="Width"
-                        value={newItem.width}
-                        onChange={handleItemChange}
-                    />
-                    <input
-                        type="number"
-                        name="height"
-                        placeholder="Height"
-                        value={newItem.height}
-                        onChange={handleItemChange}
-                    />
-                    <input
-                        type="number"
-                        name="weight"
-                        placeholder="Weight"
-                        value={newItem.weight}
-                        onChange={handleItemChange}
-                    />
-                    <input
-                        type="text"
-                        name="item_order_code"
-                        placeholder="Order Code"
-                        value={newItem.item_order_code}
-                        onChange={handleItemChange}
-                    />
-                    <h3>Lưu ý - Ghi chú</h3>
-                    <input
-                        type='text'
-                        name='required_note'
-                        placeholder='Lưu ý khi giao hàng'
-                        value={newOders.required_note}
-                        onChange={handleInputChange}
-                    />
-                    <input
-                        type='text'
-                        name='note'
-                        placeholder='Ghi chú'
-                        value={newOders.note}
-                        onChange={handleInputChange}
-                    />
-                    <input
-                        type='text'
-                        name='content'
-                        placeholder='Nội dung'
-                        value={newOders.content}
-                        onChange={handleInputChange}
-                    />
-                </div>
-
-                <div className='right-infor'>
-                    <div className='total-fee'>
-                        <h3>Phí vận chuyển</h3>
+                        <h3>Thông tin sản phẩm</h3>
                         <input
                             type='text'
-                            name='total_fee'
-                            placeholder='Phí vận chuyển'
-                            value={newOders.total_fee}
+                            name='weight'
+                            placeholder='Cân nặng'
+                            value={newOders.weight}
                             onChange={handleInputChange}
                         />
                         <input
-                        type='text'
-                        name='cod_amount'
-                        placeholder='Số tiền thu hộ'
-                        value={newOders.cod_amount}
-                        onChange={handleInputChange}
-                    />
+                            type='text'
+                            name='height'
+                            placeholder='Chiều cao'
+                            value={newOders.height}
+                            onChange={handleInputChange}
+                        />
+                        <input
+                            type='number'
+                            name='pick_station_id'
+                            placeholder='ID bưu cục gửi'
+                            value={newOders.pick_station_id}
+                            onChange={handleInputChange}
+                        />
+                        <input
+                            type='number'
+                            name='deliver_station_id'
+                            placeholder='ID bưu cục nhận'
+                            value={newOders.deliver_station_id}
+                            onChange={handleInputChange}
+                        />
+                        <input
+                            type='number'
+                            name='payment_type_id'
+                            placeholder='ID loại thanh toán'
+                            value={newOders.payment_type_id}
+                            onChange={handleInputChange}
+                        />
+                        <h3>Thông tin đơn hàng</h3>
+                        <input
+                            type="text"
+                            name="item_name"
+                            placeholder="Item Name"
+                            value={newItem.item_name}
+                            onChange={handleItemChange}
+                        />
+                        <input
+                            type="text"
+                            name="length"
+                            placeholder="Length"
+                            value={newItem.length}
+                            onChange={handleItemChange}
+                        />
+                        <input
+                            type="text"
+                            name="width"
+                            placeholder="Width"
+                            value={newItem.width}
+                            onChange={handleItemChange}
+                        />
+                        <input
+                            type="text"
+                            name="height"
+                            placeholder="Height"
+                            value={newItem.height}
+                            onChange={handleItemChange}
+                        />
+                        <input
+                            type="text"
+                            name="weight"
+                            placeholder="Weight"
+                            value={newItem.weight}
+                            onChange={handleItemChange}
+                        />
+                        <input
+                            type="text"
+                            name="item_order_code"
+                            placeholder="Order Code"
+                            value={newItem.item_order_code}
+                            onChange={handleItemChange}
+                        />
+                        <h3>Lưu ý - Ghi chú</h3>
+                        <Select
+                            options={requiredNotes}
+                            value={selectedRequiredNote}
+                            isSearchable={true}
+                            isMulti={true}
+                            onChange={(selectedOption) => {
+                                setSelectedRequiredNote(selectedOption);
+                                setNewOders((prev) => ({
+                                    ...prev,
+                                    required_note: selectedOption ? selectedOption.map(option => option.label) : [], // Gửi mảng JSON
+                                }));
+                            }}
+                            placeholder="Required Note"
+                        />
+
+                        <input
+                            type='text'
+                            name='note'
+                            placeholder='Ghi chú'
+                            value={newOders.note}
+                            onChange={handleInputChange}
+                        />
+                        <input
+                            type='text'
+                            name='content'
+                            placeholder='Nội dung'
+                            value={newOders.content}
+                            onChange={handleInputChange}
+                        />
                     </div>
-                    <div className='payment_type'>
+
+                    <div className='right-infor'>
+                        <div className='total-fee'>
+                            <h3>Phí vận chuyển</h3>
+                            <input
+                                type='text'
+                                name='total_fee'
+                                placeholder='Phí vận chuyển'
+                                value={newOders.total_fee}
+                                onChange={handleInputChange}
+                            />
+                            <input
+                                type='text'
+                                name='cod_amount'
+                                placeholder='Số tiền thu hộ'
+                                value={newOders.cod_amount}
+                                onChange={handleInputChange}
+                            />
+                        </div>
+                        <div className='payment_type'>
 
 
+                        </div>
                     </div>
+
                 </div>
 
+                <button type="button" onClick={handleAddOrder}>
+                    Create Order
+                </button>
             </div>
 
-            <button type="button" onClick={handleAddOrder}>
-                Create Order
-            </button>
 
             <ToastContainer />
         </>

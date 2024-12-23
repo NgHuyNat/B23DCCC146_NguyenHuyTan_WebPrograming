@@ -3,6 +3,8 @@ import './Dispatch.css';
 import { getAllOrders, getAllItems, getAllShippers, getAllPaymentTypes, assignShipperToOrder } from '../../configs/ApiConfigs';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import avartar from '../../assets/avartar.png';
+import PaginatedList from '../../components/paginated/PaginatedList';
 
 function Dispatch() {
   const [orders, setOrders] = useState([]);
@@ -36,158 +38,231 @@ function Dispatch() {
     fetchData();
   }, []);
 
-  // Hàm xử lý nhận đơn của shipper
-  const handleAssignOrder = async (orderId) => {
-    const selectedShipperId = selectedShippers[orderId];
-    if (!selectedShipperId) {
-      toast.warn('Vui lòng chọn Shipper!');
+  const handleAssignOrder = async (order_id, shipper_id) => {
+    console.log("SelectedShippers:", selectedShippers);
+    console.log('order_id:', order_id, 'shipper_id:', shipper_id);
+    if (!shipper_id) {
+      toast.warn("Vui lòng chọn một Shipper!");
       return;
     }
 
-    const selectedShipper = shippers.find(shipper => shipper.shipper_id === selectedShipperId);
-    if (selectedShipper && selectedShipper.status === 'Đang bận') {
-      toast.warn('Shipper này đang bận! Vui lòng chọn Shipper khác.');
+    const selectedShipper = shippers.find((shipper) => shipper.shipper_id === Number(shipper_id));
+
+    // Kiểm tra shipper có tồn tại và trạng thái
+    if (!selectedShipper || selectedShipper.status === "Busy" || selectedShipper.status === "Offline") {
+      toast.warn("Shipper đang bận hoặc offline! Vui lòng chọn Shipper khác.");
       return;
     }
 
     try {
-      const response = await assignShipperToOrder({ order_id: orderId, shipper_id: selectedShipperId });
-
-      console.log('Response:', response);
+      // Gửi yêu cầu gán đơn hàng cho shipper
+      const response = await assignShipperToOrder({
+        order_id: order_id,
+        shipper_id: shipper_id,
+      });
 
       if (response.success) {
-        const updatedNonAssignedOrders = nonAssignedOrders.filter(order => order.order_id !== orderId);
-        setNonAssignedOrders(updatedNonAssignedOrders);
+        // Cập nhật trạng thái đơn hàng và shipper trong state
+        setAssignedOrders((prevAssignedOrders) => [
+          ...prevAssignedOrders,
+          { ...response.order, shipper_id: shipper_id }, // Thêm đơn hàng vào danh sách
+        ]);
 
-        const updatedAssignedOrders = [...assignedOrders, response.order];
-        setAssignedOrders(updatedAssignedOrders);
-
-        // Cập nhật trạng thái của Shipper
-        const updatedShippers = shippers.map(shipper =>
-          shipper.shipper_id === selectedShipperId
-            ? { ...shipper, status: 'Đang bận' }
-            : shipper
+        // Xóa đơn hàng khỏi danh sách chưa gán
+        setNonAssignedOrders((prevNonAssignedOrders) =>
+          prevNonAssignedOrders.filter((order) => order.order_id !== order_id)
         );
-        setShippers(updatedShippers);
 
-        toast.warn('Đơn hàng đã được gán cho Shipper:', selectedShipper.fullname);
+        setOrders((prevOrders) =>
+          prevOrders.map((order) =>
+            order.order_id === order_id ? { ...order, shipper_id: shipper_id } : order
+          )
+        );
+
+        setShippers((prevShippers) =>
+          prevShippers.map((shipper) =>
+            shipper.shipper_id === Number(shipper_id) ? { ...shipper, status: "Busy" } : shipper
+          )
+        );
+
+        toast.success(`Đơn hàng ${order_id} đã được gán cho Shipper ${selectedShipper.fullName}`);
       } else {
-        toast.error('Lỗi khi gán đơn:', response.message);
+        toast.error(`Lỗi khi gán đơn hàng: ${response.message}`);
       }
     } catch (error) {
-      toast.error('Lỗi khi gán đơn:', error);
+      toast.error(`Lỗi khi gán đơn hàng: ${error.message}`);
     }
   };
 
-  const handleShipperChange = (orderId, shipperId) => {
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const ordersResponse = await getAllOrders();
+        setOrders(ordersResponse);
+
+        // Phân loại đơn hàng đã gán và chưa gán
+        const assigned = ordersResponse.filter((order) => order.shipper_id);
+        const nonAssigned = ordersResponse.filter((order) => !order.shipper_id);
+
+        setAssignedOrders(assigned);
+        setNonAssignedOrders(nonAssigned);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+
+
+  // useEffect(() => {
+  //   const newOrders = orders.filter(order => !order.shipper_id);
+  //   setNonAssignedOrders(newOrders);
+  // }, [orders]); 
+
+
+
+  const handleShipperChange = (order_id, shipper_id) => {
+    console.log('order_id:', order_id, 'shipper_id:', shipper_id);
     setSelectedShippers((prevSelectedShippers) => ({
       ...prevSelectedShippers,
-      [orderId]: shipperId, // Ghi lại Shipper được chọn cho từng đơn hàng
+      [order_id]: shipper_id,
     }));
   };
-  
+
 
 
   return (
     <>
-      <div className="header">
-        <div className="shipper-header">
-          <p>Shipper</p>
-        </div>
-        <div className='order-assigned'>
-          <p>Order Assigned</p>
-        </div>
-        <div className="orders-header">
-          <p>Lastest Order</p>
-        </div>
-      </div>
-
       <div className="container-dispatch">
         {/* Danh sách shipper */}
         <div className="shipper-list">
-          {shippers.map((shipper) => (
-            <div className="card" key={shipper.shipper_id}>
-              <div className="card-image"></div>
-              <div className="card-content">
-                <p><strong>ID:</strong> {shipper.shipper_id}</p>
-                <p><strong>Name:</strong> {shipper.fullname}</p>
-                <p><strong>Phone:</strong> {shipper.phoneNumber}</p>
-                <p><strong>Status:</strong> {shipper.status}</p>
+          <h3>Shippers</h3>
+          <PaginatedList
+            items={shippers}
+            itemsPerPage={4} // Hiển thị 2 shipper mỗi trang
+            renderItem={(shipper) => (
+              <div className="card-shipper" key={shipper.shipper_id}>
+                <div className="card-image">
+                  <img src={avartar} alt="Avatar" />
+                </div>
+                <div className="card-content">
+                  <p><strong>ID:</strong> {shipper.shipper_id}</p>
+                  <p><strong>Name:</strong> {shipper.fullName}</p>
+                  <p><strong>Phone:</strong> {shipper.phoneNumber}</p>
+                  <p><strong>Status:</strong> {shipper.status}</p>
+                </div>
               </div>
-            </div>
-          ))}
+            )}
+          />
         </div>
 
         {/* Đơn hàng đã được gán */}
         <div className="list-assigned">
-          {assignedOrders.map((order) => {
-            const item = items.find((item) => item.item_id === order.item_id) || {};
-            const shipper = shippers.find((shipper) => shipper.shipper_id === order.shipper_id) || {};
-            const paymentType = paymentTypes.find((type) => type.payment_type_id === order.payment_type_id) || {};
-            return (
-              <div className="order-assigned-card" key={order.order_id}>
-                <div className="card-content">
-                  <p><strong>ID:</strong> {order.order_id}</p>
-                  <p><strong>Item Name:</strong> {item.item_name}</p>
-                  <p><strong>To Phone:</strong> {order.to_phone}</p>
-                  <p><strong>To Address:</strong> {order.to_address}, {order.to_ward}, {order.to_district}, {order.to_province}</p>
-                  <p><strong>Payment Type:</strong> {paymentType.name}</p>
-                  <p><strong>Note:</strong> {shipper.phoneNumber}</p>
-                  <p><strong>Total Fee:</strong> {shipper.status}</p>
+          <h3>Order Assigned</h3>
+          <PaginatedList
+            items={assignedOrders}
+            itemsPerPage={3} // Hiển thị 3 đơn hàng mỗi trang
+            renderItem={(order) => {
+              const item = items.find((item) => item.item_id === order.item_id) || {};
+              const shipper = shippers.find((shipper) => shipper.shipper_id === order.shipper_id) || {};
+              const paymentType = paymentTypes.find((type) => type.payment_type_id === order.payment_type_id) || {};
+              return (
+                <div className="order-assigned-card" key={order.order_id}>
+                  <div className="card-content">
+                    <p><strong>ID:</strong> {order.order_id}</p>
+                    <p><strong>Item Name:</strong> {item.item_name}</p>
+                    <p><strong>To Phone:</strong> {order.to_phone}</p>
+                    <p><strong>To Address:</strong> {order.to_address}, {order.to_ward}, {order.to_district}, {order.to_province}</p>
+                    <p><strong>Payment Type:</strong> {paymentType.name}</p>
+                    <p><strong>Total Fee:</strong> {order.total_fee}</p>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            }}
+          />
         </div>
 
         {/* Đơn hàng chưa được gán */}
         <div className="list-non-assigned">
-          {nonAssignedOrders.map((order) => {
-            const item = items.find((item) => item.item_id === order.item_id) || {};
-            const paymentType = paymentTypes.find((type) => type.payment_type_id === order.payment_type_id) || {};
-            return (
-              <div className="order-assigned-card" key={order.order_id}>
-                <div className="card-content">
-                  <p><strong>ID:</strong> {order.order_id}</p>
-                  <p><strong>Item Name:</strong> {item.item_name}</p>
-                  <p><strong>To Phone:</strong> {order.to_phone}</p>
-                  <p><strong>To Address:</strong> {order.to_address}, {order.to_ward}, {order.to_district}, {order.to_province}</p>
-                  <p><strong>Payment Type:</strong> {paymentType.payment_type_name}</p>
-                  <p><strong>Note:</strong> {order.required_note}</p>
-                  <p><strong>Total Fee:</strong> {order.total_fee}</p>
-                </div>
+          <h3>Lastest Order</h3>
+          <PaginatedList
+            items={nonAssignedOrders}
+            itemsPerPage={3} // Hiển thị 3 đơn hàng mỗi trang
+            renderItem={(order) => {
+              const item = items.find((item) => item.item_id === order.item_id) || {};
+              const paymentType = paymentTypes.find((type) => type.payment_type_id === order.payment_type_id) || {};
+              return (
+                <div className="order-assigned-card" key={order.order_id}>
+                  <div className="card-content">
+                    <p>
+                      <strong>ID:</strong> {order.order_id}
+                    </p>
+                    <p>
+                      <strong>Item Name:</strong> {item.item_name}
+                    </p>
+                    <p>
+                      <strong>To Phone:</strong> {order.to_phone}
+                    </p>
+                    <p>
+                      <strong>To Address:</strong> {order.to_address}, {order.to_ward}, {order.to_district},{' '}
+                      {order.to_province}
+                    </p>
+                    <p>
+                      <strong>Payment Type:</strong> {paymentType.payment_type_name}
+                    </p>
+                    <p>
+                      <strong>Note:</strong>{' '}
+                      {(() => {
+                        try {
+                          const notes = JSON.parse(order.required_note);
+                          return Array.isArray(notes) ? notes.join(', ') : order.required_note;
+                        } catch (e) {
+                          return order.required_note; // Hiển thị giá trị gốc nếu không parse được
+                        }
+                      })()}
+                    </p>
+                    <p>
+                      <strong>Total Fee:</strong> {order.total_fee}
+                    </p>
+                  </div>
 
-                <div>
-                  <select
-                    onChange={(e) => handleShipperChange(order.order_id, e.target.value)}
-                    value={selectedShippers[order.order_id] || ''}
-                  >
-                    <option value="">Chọn Shipper</option>
-                    {shippers.map((shipper) => (
-                      <option
-                        key={shipper.shipper_id}
-                        value={shipper.shipper_id}
-                        disabled={shipper.status === 'Đang bận'}
-                      >
-                        {shipper.fullname} - {shipper.phoneNumber} {shipper.status === 'Đang bận' ? '(Bận)' : ''}
-                      </option>
-                    ))}
-                  </select>
+                  {/* Dropdown chọn Shipper */}
+                  <div className='select-shipper'>
+                    <select
+                      onChange={(e) => handleShipperChange(order.order_id, e.target.value)}
+                      value={selectedShippers[order.order_id] || ''}
+                    >
+                      <option value="">Chọn Shipper</option>
+                      {shippers.map((shipper) => (
+                        <option
+                          key={shipper.shipper_id}
+                          value={shipper.shipper_id}
+                          disabled={shipper.status === 'Busy' || shipper.status === 'Offline'} // Disabled nếu Shipper không khả dụng
+                        >
+                          {shipper.fullName} - {shipper.phoneNumber}{' '}
+                          {shipper.status === 'Busy' ? '(Bận)' : shipper.status === 'Offline' ? '(Offline)' : ''}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
 
-                </div>
-                <div>
                   {/* Nút nhận đơn */}
-                  <button
-                    className="assign-button"
-                    onClick={() => handleAssignOrder(order.order_id)}
-                  >
-                    Nhận Đơn
-                  </button>
+                  <div className='assign-button'>
+                    <button
+                      className="assign-button"
+                      onClick={() => handleAssignOrder(order.order_id, selectedShippers[order.order_id])}
+                    >
+                      Nhận Đơn
+                    </button>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            }}
+          />
         </div>
+
       </div>
       <ToastContainer />
     </>

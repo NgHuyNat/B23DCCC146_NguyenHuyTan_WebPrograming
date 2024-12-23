@@ -1,71 +1,93 @@
-    .header {
-        display: flex;
-        margin-top: 10px;
-        margin-bottom: 10px;
-        width: 100%;
-    }
+.container-dispatch {
+    padding-top: 80px;
+    display: flex;
+    width: 90%;
+    background-color: white;
+    justify-content: center;
+    margin: 0 auto;
+}
 
-    .shipper-header {
-        margin-left: 20px;
-        width: 20%;
-    }
+.shipper-list {
+    display: flex;
+    flex-direction: column;
+    width: 20%;
+    box-sizing: border-box;
+}
 
-    .order-assigned {
-        width: 40%;
-    }
+/* Container chung của mỗi card */
+.card-shipper {
+    width: 110%; 
+    max-width: 300px; 
+    height: auto; 
+    padding: 10px; 
+    border: 1px solid #ccc; 
+    border-radius: 15px; 
+    display: flex;
+    flex-direction: row;
+    align-items: center; 
+    justify-content: space-between;
+    margin: 10px auto; 
+    background-color: #fff; 
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+}
 
-    .oders-header {
-        width: 50%;
-    }
+/* Ảnh avatar */
+.card-image {
+    width: 30%; /* Chiều rộng ảnh */
+    height: 100%; /* Chiều cao cố định */
+    margin-right: 15px; /* Khoảng cách giữa ảnh và nội dung */
+}
 
-    .container-dispatch {
-        display: flex;
-        justify-content: space-between;
-        width: 100%;
-    }
+.card-image img {
+    width: 100%;
+    height: 100%;
+    border-radius: 10px; /* Bo tròn ảnh */
+    object-fit: cover; /* Giữ tỉ lệ ảnh */
+}
 
-    .shippers {
-        width: 20%;
-    }
+/* Nội dung bên phải */
+.card-content {
+    flex: 1; /* Phần nội dung mở rộng */
+    display: flex;
+    flex-direction: column; /* Hiển thị nội dung theo chiều dọc */
+    justify-content: center; /* Căn giữa nội dung */
+    color: #333;
+}
 
-    .list-assigned {
-        width: 30%;
-    }
+.card-content p {
+    margin: 5px 0;
+}
 
-    .list-non-assigned {
-        width: 50%;
-    }
+.card-content strong {
+    color: #2a3f8f; /* Màu nhấn mạnh */
+}
 
-    .card {
-        width: 200px;
-        height: 150px;
-        border: 1px solid black;
-        border-radius: 15px;
-        padding: 10px;
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        justify-content: flex-start;
-        margin-top: 10px;
-    }
 
-    .card-image {
-        width: 50px;
-        height: 50px;
-        background-color: lightgray;
-        border-radius: 10px;
-        margin-bottom: 10px;
-    }
+.list-assigned {
+    width: 40%;
+}
 
-    .card-content p {
-        margin: 5px 0;
-        font-size: 14px;
-    }
+.list-non-assigned {
+    width: 30%;
+}
 
-    .order-assigned-card {
-        border: 1px solid black;
-        width: fit-content;
-        border-radius: 15px;
-        align-items: flex-start;
-        margin-top: 10px;
-    }
+.order-assigned-card {
+    border: 1px solid black;
+    width: fit-content;
+    border-radius: 15px;
+    padding: 10px;
+    align-items: flex-start;
+    margin-top: 10px;
+}
+
+.shipper-list,
+.list-assigned,
+.list-non-assigned {
+    margin: 0 10px; /* Khoảng cách giữa các phần */
+    display: flex;
+    flex-direction: column; /* Nội dung bên trong xếp theo chiều dọc */
+    align-items: center; /* Căn giữa theo chiều ngang */
+}
+
+.sellect-shipper {
+}

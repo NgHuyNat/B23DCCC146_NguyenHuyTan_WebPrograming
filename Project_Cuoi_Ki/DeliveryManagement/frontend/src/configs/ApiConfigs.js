@@ -115,8 +115,13 @@ export const getAllPaymentTypes = async () => {
     return response.data;
 }
 
-export const assignShipperToOrder = async (order_id, shipper_id) => {
-    const response = await instance.post('/order/assign', { order_id, shipper_id });
+export const assignShipperToOrder = async (payload) => {
+    const response = await instance.post('/order/assign', payload);
+    return response.data;
+}
+
+export const login = async (email, password) => {
+    const response = await instance.post('/auth/login', { email, password });
     return response.data;
 }
 

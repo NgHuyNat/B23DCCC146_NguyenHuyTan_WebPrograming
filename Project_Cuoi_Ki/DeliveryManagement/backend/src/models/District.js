@@ -1,7 +1,7 @@
 const db = require('../configs/database');
 
 const District = {
-    getAllDistricts:(callback) => {
+    getAllDistricts: (callback) => {
         return db.query("SELECT * FROM district", (err, results) => {
             if (err) {
                 console.log(err);
@@ -32,7 +32,7 @@ const District = {
         });
     },
 
-    addDistrict: (data, callback)  => {
+    addDistrict: (data, callback) => {
         return db.query(
             "INSERT INTO district(province_id, district_name, code, type, support_type, name_extension, order_id) VALUES(?, ?, ?, ?, ?, ?, ?)",
             [data.province_id, data.district_name, data.code, data.type, data.support_type, data.name_extension, data.order_id], (err, results) => {
@@ -41,10 +41,10 @@ const District = {
                     return callback(err, null);
                 }
                 return callback(null, results);
-             });
+            });
     },
 
-    deleteDistrict: function(id, callback) {
+    deleteDistrict: function (id, callback) {
         return db.query("DELETE FROM district WHERE id=?", [id], (err, results) => {
             if (err) {
                 console.log(err);
@@ -54,7 +54,7 @@ const District = {
         });
     },
 
-    updateDistrict: function(data, callback) {
+    updateDistrict: function (data, callback) {
         return db.query(
             "UPDATE district SET province_id = ?, district_name = ?, code = ?, type = ?, support_type = ?, name_extension = ?, order_id = ?   WHERE id=?",
             [data.province_id, data.district_name, data.code, data.type, data.support_type, data.name_extension, data.order_id], (err, results) => {

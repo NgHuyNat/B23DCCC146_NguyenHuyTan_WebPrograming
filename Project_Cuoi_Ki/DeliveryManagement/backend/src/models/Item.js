@@ -1,7 +1,7 @@
 const db = require('../configs/database');
 
 const Item = {
-    getAllItems:(callback) => {
+    getAllItems: (callback) => {
         return db.query("SELECT * FROM item", (err, results) => {
             if (err) {
                 console.log(err);
@@ -21,7 +21,7 @@ const Item = {
         });
     },
 
-    addItem: (data, callback)  => {
+    addItem: (data, callback) => {
         return db.query(
             "INSERT INTO item(item_name, length, width, height, weight, item_order_code) VALUES(?, ?, ?, ?, ?, ?)",
             [data.item_name, data.length, data.width, data.height, data.weight, data.item_order_code], (err, results) => {
@@ -30,10 +30,10 @@ const Item = {
                     return callback(err, null);
                 }
                 return callback(null, results);
-             });
+            });
     },
 
-    deleteItem: function(id, callback) {
+    deleteItem: function (id, callback) {
         return db.query("DELETE FROM item WHERE id=?", [id], (err, results) => {
             if (err) {
                 console.log(err);
@@ -43,7 +43,7 @@ const Item = {
         });
     },
 
-    updateItem: function(data, callback) {
+    updateItem: function (data, callback) {
         return db.query(
             "UPDATE item SET item_name=?, length=?, width=?, height=?, weight=?, item_order_code=? WHERE id=?",
             [data.item_name, data.length, data.width, data.height, data.weight, data.item_order_code], (err, results) => {
