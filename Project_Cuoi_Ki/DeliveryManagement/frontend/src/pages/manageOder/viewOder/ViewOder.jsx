@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './ViewOder.css';
 import { useNavigate } from 'react-router-dom';
 import { getAllOrders, getAllItems, getAllShippers, getAllPaymentTypes } from '../../../configs/ApiConfigs';
+import { IoSearchCircleSharp } from "react-icons/io5";
 
 function ViewOder() {
     const [orders, setOrders] = useState([]);
@@ -46,10 +47,11 @@ function ViewOder() {
             <div className='vieworder-container'>
                 <div className="header">
                     <div className="search">
-                        <input type="search" placeholder="Search" />
+                        <IoSearchCircleSharp className='search-icon' />
+                        <input type="search" placeholder="Search" className='search-input' />
                     </div>
                     <div className="add" onClick={handleAddOrder}>
-                        <button>+ New Order</button>
+                        <button className='add-btn'>+ Đơn hàng mới</button>
                     </div>
                 </div>
 
@@ -58,13 +60,13 @@ function ViewOder() {
                         <thead>
                             <tr>
                                 <th>Order No.</th>
-                                <th>Name</th>
-                                <th>From Province</th>
-                                <th>To Province</th>
-                                <th>Required Note</th>
-                                <th>Payment Type</th>
-                                <th>Total Fee</th>
-                                <th>Cod Amount</th>
+                                <th>Tên đơn hàng</th>
+                                <th>Tỉnh người gửi</th>
+                                <th>Tỉnh người nhận</th>
+                                <th>Ghi chú</th>
+                                <th>Kiểu thanh toán</th>
+                                <th>Tổng phí</th>
+                                <th>Phí COD</th>
                                 <th>Shipper</th>
                             </tr>
                         </thead>

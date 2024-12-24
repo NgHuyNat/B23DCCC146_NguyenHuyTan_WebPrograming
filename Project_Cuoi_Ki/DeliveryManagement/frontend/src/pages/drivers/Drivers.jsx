@@ -5,6 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import Modal from '../../components/modal/Modal';
 import instance from '../../configs/ApiConfigs';
 import './Drivers.css';
+import { IoSearchCircleSharp } from "react-icons/io5";
 
 function Drivers() {
     const [shippers, setShippers] = useState([]);
@@ -72,7 +73,9 @@ function Drivers() {
             <div className='driver-container'>
                 <div className="header">
                     <div className="search">
+                        <IoSearchCircleSharp className='search-icon' />
                         <input
+                            className='search-input'
                             type="search"
                             placeholder="Search by any field..."
                             value={searchTerm}
@@ -80,7 +83,7 @@ function Drivers() {
                         />
                     </div>
                     <div className="add" >
-                        <button onClick={() => setIsModalOpen(true)}>+ New Driver</button>
+                        <button className='add-btn' onClick={() => setIsModalOpen(true)}>+ Shipper mới</button>
                     </div>
                 </div>
 
@@ -88,13 +91,13 @@ function Drivers() {
                     <table border="1" cellPadding="10" cellSpacing="0">
                         <thead className="table-header">
                             <tr>
-                                <th>Full Name</th>
-                                <th>Phone Number</th>
-                                <th>Address</th>
+                                <th>Họ và tên</th>
+                                <th>SĐT</th>
+                                <th>Địa chỉ</th>
                                 <th>Email</th>
-                                <th>Status</th>
-                                <th>Vehicle Type</th>
-                                <th>License Plate</th>
+                                <th>Trạng thái</th>
+                                <th>Loại phương tiện</th>
+                                <th>Biển số</th>
                             </tr>
                         </thead>
                         <tbody>

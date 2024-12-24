@@ -4,22 +4,30 @@
     /* Sắp xếp nội dung theo cột */
     justify-content: space-between;
     /* Đẩy phân trang xuống cuối */
-    min-height: 400px;
+    /* min-height: 400px; */
     /* Chiều cao tối thiểu của container */
+    color: #f26522;
+    
 }
 
 .pagination-content {
-    flex-grow: 1;
+    display: flex;
+    gap: 10px;
+    justify-content: space-around;
+    flex:1;
+    
     /* Phần danh sách chiếm không gian còn lại */
-    margin-bottom: 10px;
+  
     /* Khoảng cách giữa nội dung và phân trang */
 }
 
 .pagination {
+    color: #f26522;
     display: flex;
     justify-content: center;
     /* Căn giữa các nút phân trang */
     margin-top: 10px;
+    
 }
 
 .pagination button {

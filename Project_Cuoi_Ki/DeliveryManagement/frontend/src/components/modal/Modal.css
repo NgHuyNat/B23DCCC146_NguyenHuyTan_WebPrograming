@@ -11,10 +11,12 @@
     z-index: 1000;
     padding-top: 80px;
     align-items: flex-start;
+    padding: 20px;
 }
 
 .modal-content {
-    background: #fff;
+    filter: drop-shadow(0 20px 13px rgb(0 0 0 / 0.03)) drop-shadow(0 8px 5px rgb(0 0 0 / 0.08));
+    background: whitesmoke;
     padding: 20px;
     border-radius: 8px;
     max-width: 500px;
@@ -23,4 +25,5 @@
     flex-direction: column;
     gap: 10px;
     overflow: hidden;
+    margin-bottom: 100px !important;
 }

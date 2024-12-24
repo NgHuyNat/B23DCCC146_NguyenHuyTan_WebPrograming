@@ -9,18 +9,20 @@ function Home() {
             {/* Hero Section */}
             <div className="hero-section">
                 <div className="hero-text">
-                    <h1>Welcome to Delivery Management</h1>
-                    <p>Streamline your logistics with ease. Manage drivers, track deliveries, and optimize operations in one platform.</p>
-                    <button className="cta-button">Get Started</button>
-                </div>
-                <div className="hero-image">
-                    <img src={home1} alt="Hero" />
+                    <div className='hero-content'>
+                        <h1 className='hero-h1'>Welcome to Delivery Management</h1>
+                        <p>Streamline your logistics with ease. Manage drivers, track deliveries, and optimize operations in one platform.</p>
+                        <button className="cta-button">Get Started</button>
+                    </div>
+                    <div className="hero-image">
+                        <img src={home1} alt="Hero" />
+                    </div>
                 </div>
             </div>
 
 
             <div className='service-section'>
-                <h2>Our Services</h2>
+                <h2 className='service-h2'>Our Services</h2>
                 <div className='services'>
                     <div className='service-content'>
                         <h3>Maintenance and Repair Services</h3>
@@ -37,13 +39,13 @@ function Home() {
                 </div>
             </div>
 
-            <div className='mission-section'>
-                <div className='mission'>
+            <div className='hero-section'>
+                <div className='hero-text'>
                     <div className='mission-image'>
                         <img src={home2} alt="Mission" />
                     </div>
-                    <div className='mission-content'>
-                        <h2>Our Mission</h2>
+                    <div className='hero-content'>
+                        <h2 className='hero-h1'>Our Mission</h2>
                         <p>Our mission is to empower businesses of all sizes to achieve seamless, agile, and cost-effective supply chain operations. We believe that a well-optimized supply chain is the backbone of successful businesses, enabling them to deliver exceptional products and services to customers around the world.</p>
                     </div>
 
@@ -53,7 +55,7 @@ function Home() {
 
             {/* Features Section */}
             <div className="feature-section">
-                <h2>Our Features</h2>
+                <h2 className='-h2feture'>Our Features</h2>
                 <div className="features">
                     <div className="feature-card">
                         <i className="fas fa-truck"></i>

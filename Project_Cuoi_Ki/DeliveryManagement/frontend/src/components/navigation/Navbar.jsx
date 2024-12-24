@@ -71,31 +71,31 @@ function Navbar({ theme, setTheme }) {
             <div className='navbar'>
                 <img src={logo_light} alt='Logo' className='logo' />
                 <ul>
-                    <NavLink to='/home'><li>Home</li></NavLink>
-                    <NavLink to='/dispatch'><li>Dispatch</li></NavLink>
+                    <NavLink to='/home'><li>Trang chủ</li></NavLink>
+                    <NavLink to='/dispatch'><li>Nhận đơn</li></NavLink>
                     <li>
                         <Dropdown
-                            buttonText="Manage Order"
+                            buttonText="Quản lý đơn hàng "
                             content={
                                 <>
-                                    <NavLink to='/manager-oder/view-order' className="no-underline"><DropdownItem>View Orders</DropdownItem></NavLink>
-                                    <NavLink to='/manager-oder/create-order' className="no-underline"><DropdownItem>Create Order</DropdownItem></NavLink>
-                                    <NavLink to='/manager-oder/analytics' className="no-underline"><DropdownItem>Analytics</DropdownItem></NavLink>
+                                    <NavLink to='/manager-oder/view-order' className="no-underline"><DropdownItem>Danh sách đơn</DropdownItem></NavLink>
+                                    <NavLink to='/manager-oder/create-order' className="no-underline"><DropdownItem>Tạo đơn</DropdownItem></NavLink>
+                                    <NavLink to='/manager-oder/analytics' className="no-underline"><DropdownItem>Thống kê</DropdownItem></NavLink>
                                 </>
                             }
                         />
                     </li>
-                    <NavLink to='/driver'><li>Drivers</li></NavLink>
-                    <NavLink to='/map'><li>Map</li></NavLink>
+                    <NavLink to='/driver'><li>Shipper</li></NavLink>
+                    <NavLink to='/map'><li>Bản đồ</li></NavLink>
                 </ul>
                 <div className='profile'>
                     <Dropdown
                         buttonText={<img src={avatar_profile} alt="Profile" className="profile-image" />}
                         content={
-                            <>
-                                <DropdownItem onClick={() => setIsProfileOpen(true)}>Profile</DropdownItem>
+                            <div className='dropdown-items'>
+                                <DropdownItem className='dropdown-items_1' onClick={() => setIsProfileOpen(true)}>Profile</DropdownItem>
                                 <NavLink to='/logout' className="no-underline"><DropdownItem>Logout</DropdownItem></NavLink>
-                            </>
+                            </div>
                         }
                     />
                 </div>
@@ -112,7 +112,7 @@ function Navbar({ theme, setTheme }) {
                         <h1>{editProfile.full_name}</h1>
                         <div className="profile-field">
                             <label>Full Name: </label>
-                            <input
+                            <input className='input'
                                 type="text"
                                 name="full_name"
                                 value={editProfile.full_name || ''}
@@ -125,7 +125,7 @@ function Navbar({ theme, setTheme }) {
                         </div>
                         <div className="profile-field">
                             <label>Phone Number: </label>
-                            <input
+                            <input className='input'
                                 type="text"
                                 name="phone_number"
                                 value={editProfile.phone_number || ''}
@@ -136,10 +136,10 @@ function Navbar({ theme, setTheme }) {
                             <label>Role: </label>
                             <span>{profile.role}</span> {/* Role cố định, không chỉnh sửa */}
                         </div>
-                    </div>
-                    <div className="modal-buttons">
-                        <button onClick={handleSave} className="small-button">Save</button>
-                        <button onClick={() => setIsProfileOpen(false)} className="small-button">Cancel</button>
+                        <div className="modal-buttons">
+                            <button onClick={handleSave} className="small-button">Save</button>
+                            <button onClick={() => setIsProfileOpen(false)} className="small-button">Cancel</button>
+                        </div>
                     </div>
                 </div>
             </Modal>

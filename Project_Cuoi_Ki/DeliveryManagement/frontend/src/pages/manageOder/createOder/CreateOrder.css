@@ -1,3 +1,7 @@
+.title{
+    padding: 20px 0px 20px 0px;
+}
+
 .create-container{
     padding-top: 80px;
     width: 90%;
@@ -6,10 +10,10 @@
 
 .form-orders{
     display: flex;
+    gap:30px;
     justify-content: space-between;
     width: 100%;
-    height: fit-content;
-    padding: 20px;
+    height: 100%;
 }
 
 .form-item{
@@ -24,22 +28,199 @@
     width: 20%;
     height: 40px;
 }
-/* 
+
+
+.title{
+    margin-bottom: 20px;
+}
+/* bên trái */
+
 .phongbi-container{
-    background-image: url("../../../assets/phongbi.png");
-    position: relative;
+    position:relative;
     width: 100%;
-    height: 1000vh;
+    height: 100%;
+    object-position: center;
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
+    top: 0px;
+    left: 0px;
+    border-bottom-right-radius: 20px; /* 4px */
+    border-bottom-left-radius: 20px; /* 4px */
+    background-color: white;
+    margin-bottom: 20px;
+    filter: drop-shadow(0 20px 13px rgb(0 0 0 / 0.03)) drop-shadow(0 8px 5px rgb(0 0 0 / 0.08));
+}
+.phongbi_img {
+    width: 100%;
+    height: 30px;
+    object-fit: cover;
+    object-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    margin-top: -35px;
+    border-top-right-radius: 20px;
 }
 
 .phongbi-item{
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    padding: 0px 30px 30px 30px;
+    
 }
- */
+
+.sender-info{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+.sender-info-item {
+    color:#f26522;
+    font-size: 18px;
+    display: flex;
+    gap: 20px;
+}
+
+.sender-info-btn {
+    background-color: white;
+    border: white;
+    text-decoration: underline;
+    cursor: pointer;
+    color:#f26522;
+    font-size: 18px;
+    line-height:0px; 
+    margin-bottom: 30px;
+}
+
+.ben_nhan-h3 {
+    border-top: 2px solid gray;
+    padding-top:10px ;
+}
+
+.ben_nhan-list {
+    display: flex;;
+    gap: 20px;
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+.ben_nhan-item1 {
+    outline: none;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+.ben_nhan-item2 {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-bottom: 35px;
+}
+
+.benh_nhan-item3-title {
+    margin-bottom: 10px;
+}
+
+.ben_nhan-item3 {
+    outline: none;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.ben_nhan-item4 {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.luu_y-h3 {
+    border-top: 2px solid gray;
+    padding-top:10px ;
+    margin-bottom: 10px;
+}
+
+.luu_y-list {
+    display: flex;
+    gap: 20px;
+    width: 100%;
+    margin-top: 15px;
+    align-items: center;
+}
+
+.luu_y-item {
+    display: flex;
+    gap: 20px;
+    width: 100%;
+}
+
+.create_od-btn-container {
+    text-align: right;
+}
+
+.create_od-btn {
+    background-color: #f26522;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+
+/* bên phải */
+ .total-fee {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: right;
+ }
+
+
+ /* Thêm địa chỉ nhận hàng */
+ .edit-sender-info{
+
+ }
+
+.edit-sender-h2 {
+    text-align: center;
+}
+
+.edit-sender-info-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    width: 100%;
+}
+
+.edit-sender-info-item1 {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+}
+
+.modal-buttons {
+    width: 100%;
+    display: flex;
+    gap: 10px;
+    justify-content: right;
+    margin-top: 20px;
+    padding: 0px 0px 10px 0px;
+}
+
+.btn-item {
+    background-color: #f26522;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 17px;
+    font-weight: 700;
+}

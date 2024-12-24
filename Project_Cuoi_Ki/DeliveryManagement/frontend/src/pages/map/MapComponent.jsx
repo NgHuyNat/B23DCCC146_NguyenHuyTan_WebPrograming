@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Map as ReactMapGL, Source, Layer, Marker } from 'react-map-gl';
 import axios from 'axios';
 import './MapComponent.css';
+import { IoSearchCircleSharp } from "react-icons/io5";
 
 const MapComponent = () => {
     const [orderId, setOrderId] = useState('');
@@ -74,14 +75,20 @@ const MapComponent = () => {
     return (
         <div className="map-container">
             {/* Ô tìm kiếm */}
-            <div className="search-bar">
-                <input
-                    type="text"
-                    value={orderId}
-                    onChange={(e) => setOrderId(e.target.value)}
-                    placeholder="Nhập mã đơn hàng"
-                />
-                <button onClick={handleSearch}>Tìm kiếm</button>
+            <div className='header'>
+                <div className="search">
+                    <IoSearchCircleSharp className='search-icon' />
+                    <input
+                        className='search-input'
+                        type="text"
+                        value={orderId}
+                        onChange={(e) => setOrderId(e.target.value)}
+                        placeholder="Nhập mã đơn hàng"
+                    />
+                </div>
+                <div className='add'>
+                    <button className='add-btn' onClick={handleSearch}>Tìm kiếm</button>
+                </div>
             </div>
 
             <div className='mapgl'>

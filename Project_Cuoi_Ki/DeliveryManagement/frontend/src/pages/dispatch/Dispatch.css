@@ -1,22 +1,39 @@
 .container-dispatch {
     padding-top: 80px;
     display: flex;
+    flex-direction: column;
     width: 90%;
     background-color: white;
     justify-content: center;
     margin: 0 auto;
+    padding: 80px 20px 80px 20px;
+}
+
+.dispatch-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.dispatch-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    /* text-align: left;
+    width: 100%;
+    margin-left: 130px; */
+    color: #f26522;
 }
 
 .shipper-list {
     display: flex;
-    flex-direction: column;
-    width: 20%;
     box-sizing: border-box;
 }
 
 /* Container chung của mỗi card */
 .card-shipper {
-    width: 110%; 
+    width: 100%; 
     max-width: 300px; 
     height: auto; 
     padding: 10px; 
@@ -59,20 +76,21 @@
 }
 
 .card-content strong {
-    color: #2a3f8f; /* Màu nhấn mạnh */
+    color: #001f3f; /* Màu nhấn mạnh */
 }
 
 
 .list-assigned {
-    width: 40%;
+    display: flex;
+    gap:10px;
 }
 
 .list-non-assigned {
-    width: 30%;
+   
 }
 
 .order-assigned-card {
-    border: 1px solid black;
+    border: 1px solid #ccc; 
     width: fit-content;
     border-radius: 15px;
     padding: 10px;
@@ -80,8 +98,6 @@
     margin-top: 10px;
 }
 
-.shipper-list,
-.list-assigned,
 .list-non-assigned {
     margin: 0 10px; /* Khoảng cách giữa các phần */
     display: flex;
@@ -89,5 +105,39 @@
     align-items: center; /* Căn giữa theo chiều ngang */
 }
 
-.sellect-shipper {
+.chosse-shipper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.select-shipper {
+    background-color: #f26522;
+    padding: 5px 0px;
+    border-radius: 5px;
+}
+
+.select-list {
+    outline: none;
+    background-color: #f26522;
+    border: none;
+    color: white;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    position: relative;
+    z-index: 99000;
+    overflow: visible;
+}
+
+.assign-button {
+    cursor: pointer;
+    border: none;
+    background-color: #f26522;
+    color: white;
+    font-size: 17px;
+    font-weight: 700;
+    padding: 3px 5px;
+    border-radius: 5px;
 }
